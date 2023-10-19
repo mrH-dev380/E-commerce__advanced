@@ -1,13 +1,12 @@
 @URL_DEV=http://localhost:3055/
 
-### @name signup
+### signup
 
-POST http://localhost:3055/access/signup
+POST http://localhost:3055/access/login
 content-type: application/json
 x-api-key: aee95ae865c8a573767bc02f629deff534856a7a645afc677573ee9d2d97f9443f3bf8fedd4eddb2e6cef4781b71b7b12962d4eebd8925bb3862626ede66bf08
 
 {
-  "name": "shopH",
-  "email": "shop@shop.com",
+  "email": "shop00@shop.com",
   "password": "123123"
 }

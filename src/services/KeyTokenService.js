@@ -1,23 +1,31 @@
 'use strict'
 
+const {
+  Types: { ObjectId },
+} = require('mongoose')
 const keytokenModel = require('../models/keytoken.model')
 
 class KeyTokenService {
-  static async createKeyToken({ userId, publicKey, privateKey }) {
+  static async createKeyToken({ userId, publicKey, privateKey, refreshToken }) {
     try {
-      // publicKey được sinh ra bởi thuật toán bất đối xứng chưa được hash nên chuyển qua string để lưu vào db
-      const publicKeyString = publicKey.toString()
-      const token = await keytokenModel.create({
-        user: userId,
-        publicKey: publicKeyString,
-        // publicKey,
-        // privateKey,
-      })
-
+      const filter = { user: userId },
+        update = { publicKey, privateKey, refreshTokenUsed: [], refreshToken },
+        option = { upsert: true, new: true }
+      const token = await keytokenModel.findOneAndUpdate(filter, update, option)
       return token ? token.publicKey : null
     } catch (error) {
       return error
     }
+  }
+
+  static async findByUserId(userId) {
+    return await keytokenModel.findOne({ user: new ObjectId(userId) }).lean()
+  }
+
+  static async removeKeyById(id) {
+    return await keyTokenModel.deleteOne({
+      _id: new ObjectId(id),
+    })
   }
 }
 

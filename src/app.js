@@ -22,6 +22,4 @@ require('./dbs/init.mongodb.js')
 const route = require('./routes')
 route(app)
 
-// handling error
-
 module.exports = app
