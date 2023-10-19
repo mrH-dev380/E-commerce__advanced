@@ -38,6 +38,7 @@ class AccessService {
 
     // 3 - create AT and RT -> save
     const publicKey = crypto.randomBytes(64).toString('hex')
+    console.log('publicKey', publicKey)
     const privateKey = crypto.randomBytes(64).toString('hex')
 
     // 4 - generate tokens
@@ -127,7 +128,7 @@ class AccessService {
   }
 
   // [POST] /access/logout
-  static async logOut({ keyStore }) {
+  static async logOut(keyStore) {
     const delKey = await KeyTokenService.removeKeyById(keyStore._id)
     console.log(delKey)
     return delKey

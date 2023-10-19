@@ -23,7 +23,8 @@ class KeyTokenService {
   }
 
   static async removeKeyById(id) {
-    return await keyTokenModel.deleteOne({
+    console.log('id', id)
+    return await keytokenModel.deleteOne({
       _id: new ObjectId(id),
     })
   }
