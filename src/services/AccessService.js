@@ -4,10 +4,14 @@ const bcrypt = require('bcrypt')
 const crypto = require('node:crypto')
 const shopModel = require('../models/shop.model')
 const KeyTokenService = require('./KeyTokenService')
-const { createTokenPair } = require('../auth/authUtils')
+const { createTokenPair, verifyJWT } = require('../auth/authUtils')
 const { getInfoData } = require('../utils/index')
 const { findByEmail } = require('./ShopService')
-const { BadRequestError, AuthFailureError } = require('../core/error.response')
+const {
+  BadRequestError,
+  AuthFailureError,
+  ForbiddenError,
+} = require('../core/error.response')
 
 const RoleShop = {
   SHOP: 'shop',
@@ -17,6 +21,55 @@ const RoleShop = {
 }
 
 class AccessService {
+  static async handlerRefreshToken(refreshToken) {
+    const foundTokenUsed = await KeyTokenService.findByRefreshTokenUsed(
+      refreshToken
+    )
+    // check and delete all token in keyStore
+    if (foundTokenUsed) {
+      const { userId, email } = await verifyJWT(
+        refreshToken,
+        foundTokenUsed.privateKey
+      )
+      console.log(userId, email)
+      await KeyTokenService.deleteByUserId(userId)
+      throw new ForbiddenError({
+        message: 'Something went wrong. Please login again.',
+      })
+    }
+
+    // not found token
+    const holderToken = await KeyTokenService.findByRefreshToken(refreshToken)
+    if (!holderToken)
+      throw new AuthFailureError({ message: 'Shop not registered.' })
+
+    // verifyToken
+    const { userId, email } = await verifyJWT(
+      refreshToken,
+      holderToken.privateKey
+    )
+
+    // check userId
+    const foundShop = await findByEmail({ email })
+    if (!foundShop)
+      throw new AuthFailureError({ message: 'Shop not registered.' })
+
+    // create new token
+    const tokens = await createTokenPair(
+      { userId, email },
+      holderToken.publicKey,
+      holderToken.privateKey
+    )
+
+    // update token
+    await KeyTokenService.updateKeyToken(refreshToken, tokens)
+
+    return {
+      user: { userId, email },
+      tokens,
+    }
+  }
+
   // [POST] /access/login
   /**
    * 1 - check email in db
@@ -38,7 +91,6 @@ class AccessService {
 
     // 3 - create AT and RT -> save
     const publicKey = crypto.randomBytes(64).toString('hex')
-    console.log('publicKey', publicKey)
     const privateKey = crypto.randomBytes(64).toString('hex')
 
     // 4 - generate tokens

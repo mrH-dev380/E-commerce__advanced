@@ -28,6 +28,31 @@ class KeyTokenService {
       _id: new ObjectId(id),
     })
   }
+
+  static async findByRefreshTokenUsed(refreshToken) {
+    return await keytokenModel
+      .findOne({ refreshTokenUsed: refreshToken })
+      .lean()
+  }
+
+  static async findByRefreshToken(refreshToken) {
+    return await keytokenModel.findOne({
+      refreshToken: refreshToken,
+    })
+  }
+
+  static async updateKeyToken(refreshToken, tokens) {
+    const filter = { refreshToken },
+      option = {
+        $set: { refreshToken: tokens.refreshToken },
+        $push: { refreshTokenUsed: refreshToken },
+      }
+    return await keytokenModel.updateOne(filter, option)
+  }
+
+  static async deleteByUserId(userId) {
+    return await keytokenModel.findOneAndDelete({ user: userId })
+  }
 }
 
 module.exports = KeyTokenService

@@ -54,10 +54,6 @@ const authentication = asyncHandler(async (req, res, next) => {
   // 3 - verifyToken
   const accessToken = req.headers[HEADER.AUTHORIZATION]
   if (!accessToken) throw new AuthFailureError({ message: 'Invalid Request' })
-  // console.log('keyStore', keyStore.publicKey)
-  // const decodeUser = JWT.verify(accessToken, keyStore.publicKey)
-  // console.log(123)
-  // console.log('decodeUser', decodeUser.userId, userId)
   try {
     // 4 - check user in db
     const decodeUser = JWT.verify(accessToken, keyStore.publicKey)
@@ -71,4 +67,9 @@ const authentication = asyncHandler(async (req, res, next) => {
   }
 })
 
-module.exports = { createTokenPair, authentication }
+const verifyJWT = async (token, keySecret) => {
+  console.log('token and keySecret ::', token, keySecret)
+  return await JWT.verify(token, keySecret)
+}
+
+module.exports = { createTokenPair, authentication, verifyJWT }
