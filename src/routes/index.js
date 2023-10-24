@@ -1,7 +1,6 @@
 'use strict'
 
 const { apiKey, permission } = require('../auth/checkAuth')
-const accessRoute = require('./route.access')
 
 function route(app) {
   // check api
@@ -11,7 +10,8 @@ function route(app) {
   app.use(permission('0000'))
 
   // init route
-  app.use('/access', accessRoute)
+  app.use('/product', require('./route.product'))
+  app.use('/access', require('./route.access'))
 
   // handling error
   app.use((req, res, next) => {
@@ -25,6 +25,7 @@ function route(app) {
     return res.status(statusCode).json({
       status: 'error',
       code: statusCode,
+      stack: error.stack,
       message: error.message || 'Internal Server Error',
     })
   })
