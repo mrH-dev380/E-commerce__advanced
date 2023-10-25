@@ -28,7 +28,6 @@ class ProductController {
 
   // [GET] /product/publish/all
   async getListSearchProduct(req, res, next) {
-    console.log('1::', req.params)
     new SuccessResponse({
       message: 'Get list product search successful',
       metadata: await ProductServiceV2.getListSearchProduct(req.params),
@@ -57,10 +56,29 @@ class ProductController {
   async createNewProduct(req, res, next) {
     new SuccessResponse({
       message: 'Create new product successful',
-      metadata: await ProductServiceV2.createProduct(req.body.product_type, {
-        ...req.body,
-        product_shop: req.user.userId,
-      }),
+      metadata: await ProductServiceV2.createProduct(
+        req.body.product_type,
+        req.params.productId,
+        {
+          ...req.body,
+          product_shop: req.user.userId,
+        }
+      ),
+    }).send(res)
+  }
+
+  // [POST] /product/signup
+  async updateProduct(req, res, next) {
+    new SuccessResponse({
+      message: 'Update product successful',
+      metadata: await ProductServiceV2.updateProduct(
+        req.body.product_type,
+        req.params.productId,
+        {
+          ...req.body,
+          product_shop: req.user.userId,
+        }
+      ),
     }).send(res)
   }
 
