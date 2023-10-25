@@ -35,6 +35,24 @@ class ProductController {
     }).send(res)
   }
 
+  // [GET] /product/
+  async findAllProducts(req, res, next) {
+    new SuccessResponse({
+      message: 'Get list findAllProducts successful',
+      metadata: await ProductServiceV2.findAllProducts(req.query),
+    }).send(res)
+  }
+
+  // [GET] /product/
+  async findProductById(req, res, next) {
+    new SuccessResponse({
+      message: 'Get product by id  successful',
+      metadata: await ProductServiceV2.findProductById({
+        product_id: req.params.product_id,
+      }),
+    }).send(res)
+  }
+
   // [POST] /product/signup
   async createNewProduct(req, res, next) {
     new SuccessResponse({
