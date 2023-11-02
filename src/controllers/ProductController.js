@@ -52,13 +52,12 @@ class ProductController {
     }).send(res)
   }
 
-  // [POST] /product/signup
+  // [POST] /product
   async createNewProduct(req, res, next) {
     new SuccessResponse({
       message: 'Create new product successful',
       metadata: await ProductServiceV2.createProduct(
         req.body.product_type,
-        req.params.productId,
         {
           ...req.body,
           product_shop: req.user.userId,
@@ -67,7 +66,7 @@ class ProductController {
     }).send(res)
   }
 
-  // [POST] /product/signup
+  // [PATCH] /product/:productId
   async updateProduct(req, res, next) {
     new SuccessResponse({
       message: 'Update product successful',

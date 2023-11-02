@@ -96,7 +96,7 @@ const furnitureSchema = new Schema(
     product_shop: { type: Types.ObjectId, ref: 'Shop' },
   },
   {
-    collection: 'furniture',
+    collection: 'Furniture',
     timestamps: true,
   }
 )

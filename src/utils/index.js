@@ -50,7 +50,6 @@ const updateNestedObjectParser = (obj) => {
       final[key] = obj[key]
     }
   })
-  console.log('utils::', final)
   return final
 }
 

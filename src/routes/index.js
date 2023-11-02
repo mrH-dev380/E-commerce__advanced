@@ -12,6 +12,7 @@ function route(app) {
   // init route
   app.use('/product', require('./route.product'))
   app.use('/access', require('./route.access'))
+  app.use('/discount', require('./route.discount'))
 
   // handling error
   app.use((req, res, next) => {

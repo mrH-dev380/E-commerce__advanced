@@ -187,7 +187,7 @@ class AccessService {
           massage: 'Key Store error',
         }
       }
-      console.log(`Key Store::`, keyStore)
+      // console.log(`Key Store::`, keyStore)
 
       // create token pair
       const tokens = await createTokenPair(
@@ -195,7 +195,7 @@ class AccessService {
         publicKey,
         privateKey
       )
-      console.log(`Create Token Success::`, tokens)
+      // console.log(`Create Token Success::`, tokens)
 
       return {
         code: '201',
