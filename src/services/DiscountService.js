@@ -146,7 +146,7 @@ class DiscountService {
   }
 
   static async getAllDiscountCodesByShop({ limit, page, shopId }) {
-    const discount = findAllDiscountCodesSelect({
+    const discount = await findAllDiscountCodesSelect({
       limit: +limit,
       page: +page,
       filter: {
@@ -162,7 +162,6 @@ class DiscountService {
         'discount_value',
       ],
     })
-
     return discount
   }
 
@@ -174,6 +173,8 @@ class DiscountService {
         discount_shopId: new Types.ObjectId(shopId),
       },
     })
+
+    console.log('code::', foundDiscount)
 
     if (!foundDiscount)
       throw new NotFoundError({ message: 'Discount not exists' })
