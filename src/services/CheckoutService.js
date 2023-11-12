@@ -2,6 +2,7 @@
 
 const { Types } = require('mongoose')
 const cartModel = require('../models/cart.model')
+const orderModel = require('../models/order.model')
 const {
   BadRequestError,
   ForbiddenError,
@@ -10,6 +11,7 @@ const {
 const { findCartByUserId } = require('../models/repositories/cartRepo')
 const { checkProductByServer } = require('../models/repositories/productRepo')
 const { getDiscountAmount } = require('./DiscountService')
+const { acquireLock, releaseLock } = require('./RedisService')
 
 class CheckoutService {
   /*
@@ -56,7 +58,7 @@ class CheckoutService {
       shop_order_ids_new = []
 
     // tinh tong bill
-    for (var i = 0; i < shop_order_ids.length; i++) {
+    for (let i = 0; i < shop_order_ids.length; i++) {
       const {
         shopId,
         shop_discounts = [],
@@ -113,6 +115,70 @@ class CheckoutService {
       shop_order_ids_new,
       checkout_order,
     }
+  }
+
+  static async orderByUser({
+    shop_order_ids,
+    userId,
+    cartId,
+    user_address = {},
+    user_payment = {},
+  }) {
+    const { shop_order_ids_new, checkout_order } =
+      await CheckoutService.checkoutReview({ userId, shop_order_ids })
+
+    // check lai 1 lan nua xem vuot ton kho hay khong?
+    // get new array Products
+    const products = shop_order_ids.flatMap((order) => order.item_products)
+    const acquireProduct = []
+    for (let i = 0; i < products.length; i++) {
+      const {productId, quantity} = products[i]
+      const keyLock = await acquireLock(productId, quantity, cartId)
+      acquireProduct.push(keyLock ? true : false)
+      if(keyLock) {
+        await releaseLock(keyLock)
+      }
+    }
+
+    // check neu co 1 san pham het hang trong kho
+    if(acquireProduct.includes(false)) {
+      throw new BadRequestError({message: 'Mot so san pham da duoc cap nhap, vui long thu lai'})
+    }
+
+    const newOrder = await orderModel.create({
+      order_userId: userId,
+      order_checkout: checkout_order,
+      order_shipping: user_address,
+      order_payment: user_payment,
+      order_product: shop_order_ids_new,
+    })
+
+    // TH: neu insert thanh cong, thi remove product trong gio hang
+    if(newOrder) {
+      // remove product in cart
+    }
+
+    return newOrder
+  }
+
+  // get all orders
+  static async getOrdersByUser(){
+
+  }
+
+  // get one order
+  static async getOneOrderByUser(){
+
+  }
+
+  // cancel order
+  static async cancelOrderByUser(){
+
+  }
+
+  // update order status [Shop | Admin]
+  static async updateOrderStatusByShop(){
+
   }
 }
 

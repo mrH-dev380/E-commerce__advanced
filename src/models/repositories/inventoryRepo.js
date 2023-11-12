@@ -17,4 +17,26 @@ const insertInventory = async ({
   })
 }
 
-module.exports = { insertInventory }
+const reservationInventory = async ({ productId, quantity, cartId }) => {
+  const query = {
+      inventory_productId: new Types.ObjectId(productId),
+      inventory_stock: { $gte: quantity },
+    },
+    updateSet = {
+      $inc: {
+        inventory_stock: -quantity,
+      },
+      $push: {
+        inventory_reservation: {
+          quantity,
+          cartId,
+          createdAt: new date(),
+        },
+      },
+    },
+    option = { upsert: true, new: true }
+
+  return await inventory.updateOne(query, updateSet, option)
+}
+
+module.exports = { insertInventory, reservationInventory }
