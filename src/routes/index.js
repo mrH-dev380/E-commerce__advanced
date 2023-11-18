@@ -14,8 +14,9 @@ function route(app) {
   app.use('/access', require('./route.access'))
   app.use('/cart', require('./route.cart'))
   app.use('/discount', require('./route.discount'))
-  app.use('/checkout', require('./route.checkout'))
-  app.use('/inventory'.require('./route.inventory'))
+  app.use('/inventory', require('./route.inventory'))
+  app.use('/comment', require('./route.comment'))
+  // app.use('/checkout', require('./route.checkout'))
 
   // handling error
   app.use((req, res, next) => {

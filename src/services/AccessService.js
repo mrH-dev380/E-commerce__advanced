@@ -114,6 +114,7 @@ class AccessService {
    * 5 0 get data return login
    */
   static async logIn({ email, password, refreshToken = null }) {
+    console.log(email, password)
     // 1 - check email in db
     const foundShop = await findByEmail({ email })
     if (!foundShop)

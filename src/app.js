@@ -13,6 +13,15 @@ app.use(compression()) // nén thành gzip gửi sang client
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+// test pub/sub redis
+
+// require('./test/inventory.test.js')
+// const productTest = require('./test/product.test.js')
+// productTest.purchaseProduct('product:001', 10)
+
+// init redis db
+require('./dbs/init.redis.js')
+
 // init db
 require('./dbs/init.mongodb.js')
 // const { checkOverload } = require('./helpers/check.connect.js')
@@ -20,6 +29,7 @@ require('./dbs/init.mongodb.js')
 
 // init router
 const route = require('./routes')
+const { BadRequestError } = require('./core/error.response.js')
 route(app)
 
 module.exports = app

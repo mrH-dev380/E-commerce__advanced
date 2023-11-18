@@ -1,13 +1,13 @@
 'use strict'
 
-const { promisify } = require('util')
+const { promisify } = require('node:util')
 // promisify chuyen doi 1 ham thanh async/await
 const redis = require('redis')
 const { reservationInventory } = require('../models/repositories/inventoryRepo')
 const redisClient = redis.createClient()
 
-const pexpire = promisify(redisClient.pexpire).bind(redisClient) // thoi gian ton tai cua 1 key
-const setnxAsync = promisify(redisClient.setnx).bind(redisClient) // kiem tra ton tai cua key
+const pexpire = promisify(redisClient.PEXPIRE).bind(redisClient) // thoi gian ton tai cua 1 key
+const setnxAsync = promisify(redisClient.SETNX).bind(redisClient) // kiem tra ton tai cua key
 
 const acquireLock = async (productId, quantity, cartId) => {
   const key = `lock_v2023_${productId}` // tao key de khoa truy cap, tra lai key khi gd hoan tat
@@ -24,7 +24,7 @@ const acquireLock = async (productId, quantity, cartId) => {
         quantity,
         cartId,
       })
-      if(isReservation.modifiedCount) {
+      if (isReservation.modifiedCount) {
         // tra lai key
         await pexpire(key, expireTime)
         return key
