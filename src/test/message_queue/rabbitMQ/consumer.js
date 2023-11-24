@@ -10,7 +10,7 @@ const runConsumer = async () => {
       durable: true, // khi redis server bi loi, sau khi khoi dong lai tiep tuc thuc hien thao tac chua hoan tat
     })
 
-    // send messages to consumer channel
+    // received message from producer
     channel.consume(
       queueName,
       (messages) => {
